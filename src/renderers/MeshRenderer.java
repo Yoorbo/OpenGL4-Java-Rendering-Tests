@@ -2,7 +2,6 @@ package renderers;
 
 import static com.jogamp.opengl.GL.GL_FLOAT;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -12,7 +11,6 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
-import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.GLBuffers;
 
 import components.ShaderComponent;
@@ -49,19 +47,11 @@ public class MeshRenderer extends BaseRenderer  {
 	        int MAX = 4;
 	    }
 	
-	
-	FloatBuffer vertexBuffer = Buffers.newDirectFloatBuffer(m_vertices.length);
-	ShortBuffer indexBuffer = Buffers.newDirectShortBuffer(m_indices.length);
-	FloatBuffer colorBuffer = Buffers.newDirectFloatBuffer(m_colors.length);
-	
-	
 	private IntBuffer bufferName = GLBuffers.newDirectIntBuffer(4);
     private IntBuffer vertexArrayName = GLBuffers.newDirectIntBuffer(1);
 
     private FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4);
     private FloatBuffer clearDepth = GLBuffers.newDirectFloatBuffer(1);
-
-    private FloatBuffer matBuffer = GLBuffers.newDirectFloatBuffer(16);
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
 	
@@ -69,8 +59,6 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private int m_positionAttribute;
 	private int m_colorAttribute;
-	
-	private IntBuffer vertexArray = IntBuffer.allocate(1);
 	
 	// Constructor
 
@@ -94,24 +82,12 @@ public class MeshRenderer extends BaseRenderer  {
 		
 		m_ShaderComponent = new ShaderComponent(getGLobject(), "src/resources/shaders", "default", "default");
 		
-		vertexBuffer.put(m_vertices);
-		indexBuffer.put(m_indices);
-		colorBuffer.put(m_colors);
-		
 		setPositionAttribute(getGLobject().glGetAttribLocation(getProgramId(), "inPosition"));
 		setColorAttribute(getGLobject().glGetAttribLocation(getProgramId(), "inColor"));
-		
-		getGLobject().glGenVertexArrays(1, vertexArray);
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		
-		m_vertices = new float[]{ 
-				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), 
-				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-            };
 
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
