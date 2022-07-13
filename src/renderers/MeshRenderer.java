@@ -21,7 +21,7 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
 	
-	private float m_cube_size = 0.1f;
+	private float m_cube_size = 1.0f;
 	
 	private float[] m_vertices = { 
 			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),

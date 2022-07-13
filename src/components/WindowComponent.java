@@ -113,9 +113,7 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		int size = Math.min(width+height, height);
-		System.out.println(size);
-		getGLobject().glViewport(0, 0, size, size);
+		getGLobject().glViewport(((width-height)/2), 0, height, height);
 	};
 	
 	
