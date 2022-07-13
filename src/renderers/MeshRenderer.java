@@ -1,5 +1,7 @@
 package renderers;
 
+import static com.jogamp.opengl.GL.GL_FLOAT;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -9,6 +11,8 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
 import components.ShaderComponent;
+import framework.Semantic;
+import gl4.HelloTriangleSimple.Buffer;
 
 public class MeshRenderer extends BaseRenderer  {
 	
@@ -102,36 +106,22 @@ public class MeshRenderer extends BaseRenderer  {
 	}
 	
 	
-	/*
-	private void render() {
-		GL4 gl = getGLobject();
-	    
-	    gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	    gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+	private void initVertexArray(GL4 gl) {
 
-	    // activating VBO
-	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, bufID[0]);
-	    int stride = 0;
-	    gl.glVertexPointer(3, GL2.GL_FLOAT, stride, 0);
-	    gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+        gl.glCreateVertexArrays(1, vertexArrayName);
 
-	    if(mode == 0) {
-	      gl.glColor3f(1.0f,1.0f,1.0f);
-	    }else{
-	      gl.glColorPointer(3, GL2.GL_FLOAT, stride, 0);
-	      gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
-	    }
+        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.POSITION, Semantic.Stream.A);
+        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.COLOR, Semantic.Stream.A);
 
-	    // render VBO
-	    gl.glDrawArrays(GL2.GL_POINTS, 0, bufSize);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 2, GL_FLOAT, false, 0);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 2 * 4);
 
-	    gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-	    gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
-	   
-	    gl.glFlush();
-	  }
-	}
-	*/
+        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.POSITION);
+        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.COLOR);
+
+        gl.glVertexArrayElementBuffer(vertexArrayName.get(0), bufferName.get(Buffer.ELEMENT));
+        gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (2 + 3) * 4);
+    }
 	
 	// MeshRenderer Getters & Setters
 
