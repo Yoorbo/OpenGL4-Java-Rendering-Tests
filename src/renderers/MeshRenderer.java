@@ -5,6 +5,7 @@ import static com.jogamp.opengl.GL.GL_FLOAT;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.charset.StandardCharsets;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.newt.event.KeyEvent;
@@ -34,14 +35,9 @@ public class MeshRenderer extends BaseRenderer  {
 			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			/*
-			-m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			*/
         };
+	
+	private float counter = 0f;
 	
 	private float[] m_colors = {
 				0.0f, 0.0f, 1.0f,
@@ -181,9 +177,13 @@ public class MeshRenderer extends BaseRenderer  {
         case KeyEvent.VK_PAGE_UP:
         	GL4 gl = getGLobject();
         	setIndicesBuffer(new short[] {
-				1, 0, 2,
-				3, 2, 1,
+        			5, 4, 6,
+    				7, 6, 5
             });
+
+        	m_cube_size += 0.01f;
+        	
+        	System.out.println(getVertexBuffer().get(1));
         	
         	setVertexBuffer(new float[] { 
         			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
@@ -265,24 +265,6 @@ public class MeshRenderer extends BaseRenderer  {
     	gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
     	
     	System.out.println(getVertices().toString());
-    }
-	
-	private void reloadVertexArray(GL4 gl) {
-		gl.glDeleteVertexArrays(1, vertexArrayName);
-
-        gl.glCreateVertexArrays(1, vertexArrayName);
-
-        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.POSITION, Semantic.Stream.A);
-        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.COLOR, Semantic.Stream.A);
-
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 3, GL_FLOAT, false, 0);
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 3 * 4);
-
-        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.POSITION);
-        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.COLOR);
-
-        gl.glVertexArrayElementBuffer(vertexArrayName.get(0), bufferName.get(Buffer.ELEMENT));
-        gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (3 + 3) * 4);
     }
 	
 	private void initVertexArray(GL4 gl) {
