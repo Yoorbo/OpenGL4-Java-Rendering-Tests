@@ -23,11 +23,10 @@ public class MeshRenderer extends BaseRenderer  {
 	private ShaderComponent m_ShaderComponent;
 	
 	private float[] m_vertices = { 
-				0.0f, 0.0f, 0.0f,
-	            1.0f, 0.0f, 0.0f,
-	            1.0f, 1.0f, 0.0f,
-	            0.0f, 1.0f, 0.0f 
-            };
+			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), 
+			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        };
 	
 	private float[] m_colors = {
 				0.0f, 0.0f, 1.0f,
@@ -37,8 +36,7 @@ public class MeshRenderer extends BaseRenderer  {
         };
 	
 	private short[] m_indices = {
-				0, 1, 2,
-	            2, 0, 3 
+				0, 1, 2
             };
 	
 	
@@ -110,31 +108,12 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		getGLobject().glClear(GL4.GL_DEPTH_BUFFER_BIT | GL4.GL_COLOR_BUFFER_BIT);
 		
-		getGLobject().glBindVertexArray(vertexArray.get(0));
-
-		getGLobject().glUseProgram(m_ShaderComponent.name);
-		
-		getGLobject().glGenBuffers(2, genericBuffer);
-		
-		getGLobject().glBindBuffer(GL4.GL_ARRAY_BUFFER, genericBuffer.get(0));
-		
-		getGLobject().glBufferData(GL4.GL_ARRAY_BUFFER, m_vertices.length, vertexBuffer, GL4.GL_STATIC_DRAW);
-		
-		getGLobject().glVertexAttribPointer(0, 3, GL4.GL_FLOAT, false, 0, 0);
-		
-		getGLobject().glEnableVertexAttribArray(0);
-		
-		getGLobject().glBindBuffer(GL4.GL_ARRAY_BUFFER, genericBuffer.get(1));
-		
-		getGLobject().glBufferData(GL4.GL_ARRAY_BUFFER, m_colors.length, colorBuffer, GL4.GL_STATIC_DRAW);
-		
-		getGLobject().glVertexAttribPointer(1, 3, GL4.GL_FLOAT, false, 0, 0);
-		
-		getGLobject().glEnableVertexAttribArray(1);
-		
-		getGLobject().glDrawArrays(GL4.GL_TRIANGLES, 0, 6);
+		m_vertices = new float[]{ 
+				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), 
+				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+            };
 		
 		// view matrix
         {
