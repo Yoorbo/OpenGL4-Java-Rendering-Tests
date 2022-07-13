@@ -62,8 +62,6 @@ public class MeshRenderer extends BaseRenderer  {
     private FloatBuffer clearDepth = GLBuffers.newDirectFloatBuffer(1);
 
     private FloatBuffer matBuffer = GLBuffers.newDirectFloatBuffer(16);
-
-    private ByteBuffer globalMatricesPointer, modelMatrixPointer;
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
 	
@@ -137,7 +135,7 @@ public class MeshRenderer extends BaseRenderer  {
                 GL4.GL_UNSIGNED_SHORT,
                 0);
 
-        getGLobject().glUseProgram(0);
+        getGLobject().glUseProgram(m_ShaderComponent.name);
         getGLobject().glBindVertexArray(0);
 		
 	}
@@ -197,18 +195,6 @@ public class MeshRenderer extends BaseRenderer  {
             gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
         }
 
-        // map the transform buffers and keep them mapped
-        globalMatricesPointer = gl.glMapNamedBufferRange(
-                bufferName.get(Buffer.GLOBAL_MATRICES),
-                0,
-                16 * 4 * 2,
-                GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT); // flags
-
-        modelMatrixPointer = gl.glMapNamedBufferRange(
-                bufferName.get(Buffer.MODEL_MATRIX),
-                0,
-                16 * 4,
-                GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT);
     }
 	
 	
