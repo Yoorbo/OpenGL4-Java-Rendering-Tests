@@ -20,13 +20,25 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
 	
+	private float m_cube_size = 0.1f;
+	
 	private float[] m_vertices = { 
-			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			-m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			
+			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			/*
+			-m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			*/
         };
 	
 	private float[] m_colors = {
@@ -37,7 +49,11 @@ public class MeshRenderer extends BaseRenderer  {
         };
 	
 	private short[] m_indices = {
-				0, 1, 2, 3, 0, 4, 5
+				1, 0, 2,
+				3, 2, 1,
+				
+				5, 4, 6,
+				7, 6, 5
             };
 	
 	
@@ -94,6 +110,8 @@ public class MeshRenderer extends BaseRenderer  {
 
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
+        
+        
 
         getGLobject().glUseProgram(m_ShaderComponent.name);
         getGLobject().glBindVertexArray(vertexArrayName.get(0));
