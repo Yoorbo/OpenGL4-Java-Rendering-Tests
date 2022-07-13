@@ -114,14 +114,6 @@ public class MeshRenderer extends BaseRenderer  {
 				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
 				(float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
             };
-		
-		// view matrix
-        {
-            float[] view = FloatUtil.makeIdentity(new float[16]);
-            for (int i = 0; i < 16; i++)
-                globalMatricesPointer.putFloat(16 * 4 + i * 4, view[i]);
-        }
-
 
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
