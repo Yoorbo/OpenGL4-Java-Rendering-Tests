@@ -1,5 +1,7 @@
 package components;
 
+import java.nio.ByteBuffer;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.WindowAdapter;
@@ -11,6 +13,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.Animator;
 
 public class WindowComponent extends BaseComponent implements GLEventListener, KeyListener {
@@ -21,6 +24,8 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
     private Animator m_animator;
     private GLAutoDrawable m_drawable;
     private int m_programId;
+    
+    protected ByteBuffer globalMatricesPointer, modelMatrixPointer;
     
     private static GL4 m_GLobject;
     
@@ -107,7 +112,12 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {};
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		int size = Math.min(width+height, height);
+		System.out.println(size);
+		getGLobject().glViewport(0, 0, size, size);
+	};
+	
 	
 	// WindowComponent Getters & Setters
 	

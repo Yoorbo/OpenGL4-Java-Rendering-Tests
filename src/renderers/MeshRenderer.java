@@ -11,6 +11,7 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
+import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.GLBuffers;
 
 import components.ShaderComponent;
@@ -107,10 +108,26 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		
+		// view matrix
+        {
+            float[] view = FloatUtil.makeIdentity(new float[16]);
+            for (int i = 0; i < 16; i++)
+                globalMatricesPointer.putFloat(16 * 4 + i * 4, view[i]);
+        }
 
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
         
+        {
+            long now = System.currentTimeMillis();
+            float diff = (float) (now - getStart()) / 1_000;
+
+            float[] scale = FloatUtil.makeScale(new float[16], true, 0.5f, 0.5f, 0.5f);
+            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, diff, 0f, 0f, 1f, new float[3]);
+            float[] model = FloatUtil.multMatrix(scale, rotateZ);
+            modelMatrixPointer.asFloatBuffer().put(model);
+        }
         
 
         getGLobject().glUseProgram(m_ShaderComponent.name);
@@ -190,6 +207,19 @@ public class MeshRenderer extends BaseRenderer  {
             gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, bufferName.get(Buffer.MODEL_MATRIX));
             gl.glBufferStorage(GL4.GL_UNIFORM_BUFFER, modelBlockSize, null, GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT);
             gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
+            
+         // map the transform buffers and keep them mapped
+            globalMatricesPointer = gl.glMapNamedBufferRange(
+                    bufferName.get(Buffer.GLOBAL_MATRICES),
+                    0,
+                    16 * 4 * 2,
+                    GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT); // flags
+
+            modelMatrixPointer = gl.glMapNamedBufferRange(
+                    bufferName.get(Buffer.MODEL_MATRIX),
+                    0,
+                    16 * 4,
+                    GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT);
         }
 
     }
