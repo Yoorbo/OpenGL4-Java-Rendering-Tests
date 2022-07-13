@@ -2,11 +2,13 @@ package components;
 
 public abstract class BaseComponent {
 	private boolean m_isActive = true;
+	private long m_start;
 	
 	// Constructor
 	
 	public BaseComponent() {
         System.out.println(this.getClass().getSimpleName() + " initialized");
+        setStart(System.currentTimeMillis());
         init();
     }
 	
@@ -28,6 +30,20 @@ public abstract class BaseComponent {
 	 */
 	public void setActive(boolean isActive) {
 		this.m_isActive = isActive;
+	}
+
+	/**
+	 * @return the start
+	 */
+	public long getStart() {
+		return m_start;
+	}
+
+	/**
+	 * @param start the start to set
+	 */
+	public void setStart(long start) {
+		this.m_start = start;
 	}
 	
 }
