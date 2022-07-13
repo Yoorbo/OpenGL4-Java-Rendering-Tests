@@ -93,7 +93,13 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 	
 
 	@Override
-	public void keyPressed(KeyEvent e) {};
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            new Thread(() -> {
+                getWindow().destroy();
+            }).start();
+        }
+    }
 
 	@Override
 	public void keyReleased(KeyEvent e) {};

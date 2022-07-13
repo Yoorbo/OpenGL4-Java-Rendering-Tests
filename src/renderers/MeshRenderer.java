@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
@@ -21,7 +22,7 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
 	
-	private float m_cube_size = 1.0f;
+	private float m_cube_size = 0.3f;
 	
 	private float[] m_vertices = { 
 			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
@@ -72,6 +73,9 @@ public class MeshRenderer extends BaseRenderer  {
 
     private FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4);
     private FloatBuffer clearDepth = GLBuffers.newDirectFloatBuffer(1);
+    
+    private FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(m_vertices);
+    private ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(m_indices);
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
 	
@@ -151,6 +155,9 @@ public class MeshRenderer extends BaseRenderer  {
 
         getGLobject().glUseProgram(m_ShaderComponent.name);
         getGLobject().glBindVertexArray(0);
+        
+        
+        System.out.println(getVertices());
 		
 	}
 	
@@ -167,19 +174,35 @@ public class MeshRenderer extends BaseRenderer  {
         gl.glDeleteBuffers(Buffer.MAX, bufferName);
     }
 	
+	@Override
+    public void keyPressed(KeyEvent e) {        
+        switch (e.getKeyCode()) {
+        case KeyEvent.VK_ESCAPE:
+        	new Thread(() -> {
+                getWindow().destroy();
+            }).start();
+        case KeyEvent.VK_PAGE_UP:
+        	GL4 gl = getGLobject();
+        	/*
+        	setVertexBuffer(new float[] {
+				1, 0, 2,
+				3, 2, 1,
+            });
+            */
+        	reloadBuffers(gl);
+        }
+    }
+	
 	private void initBuffers(GL4 gl) {
-
-        FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(m_vertices);
-        ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(m_indices);
 
         gl.glCreateBuffers(Buffer.MAX, bufferName);
 
         if (!bug1287) {
 
-            gl.glNamedBufferStorage(bufferName.get(Buffer.VERTEX), vertexBuffer.capacity() * Float.BYTES, vertexBuffer,
-                    GL4.GL_STATIC_DRAW);
-            gl.glNamedBufferStorage(bufferName.get(Buffer.ELEMENT), elementBuffer.capacity() * Short.BYTES,
-                    elementBuffer, GL4.GL_STATIC_DRAW);
+            gl.glNamedBufferStorage(bufferName.get(Buffer.VERTEX), getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(),
+                    GL4.GL_STREAM_DRAW);
+            gl.glNamedBufferStorage(bufferName.get(Buffer.ELEMENT), getIndicesBuffer().capacity() * Short.BYTES,
+            		getIndicesBuffer(), GL4.GL_STREAM_DRAW);
 
             gl.glNamedBufferStorage(bufferName.get(Buffer.GLOBAL_MATRICES), 16 * 4 * 2, null, GL4.GL_MAP_WRITE_BIT);
             gl.glNamedBufferStorage(bufferName.get(Buffer.MODEL_MATRIX), 16 * 4, null, GL4.GL_MAP_WRITE_BIT);
@@ -187,11 +210,11 @@ public class MeshRenderer extends BaseRenderer  {
         } else {
 
             gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferName.get(Buffer.VERTEX));
-            gl.glBufferStorage(GL4.GL_ARRAY_BUFFER, vertexBuffer.capacity() * Float.BYTES, vertexBuffer, 0);
+            gl.glBufferData(GL4.GL_ARRAY_BUFFER, getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(), GL4.GL_STREAM_DRAW);
             gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
-            gl.glBufferStorage(GL4.GL_ELEMENT_ARRAY_BUFFER, elementBuffer.capacity() * Short.BYTES, elementBuffer, 0);
+            gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
@@ -220,6 +243,32 @@ public class MeshRenderer extends BaseRenderer  {
                     0,
                     16 * 4,
                     GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT);
+        }
+
+    }
+	
+	
+	private void reloadBuffers(GL4 gl) {
+
+        if (!bug1287) {
+
+            gl.glNamedBufferStorage(bufferName.get(Buffer.VERTEX), getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(),
+                    GL4.GL_STATIC_DRAW);
+            gl.glNamedBufferStorage(bufferName.get(Buffer.ELEMENT), getIndicesBuffer().capacity() * Short.BYTES,
+            		getIndicesBuffer(), GL4.GL_STATIC_DRAW);
+
+            gl.glNamedBufferStorage(bufferName.get(Buffer.GLOBAL_MATRICES), 16 * 4 * 2, null, GL4.GL_MAP_WRITE_BIT);
+            gl.glNamedBufferStorage(bufferName.get(Buffer.MODEL_MATRIX), 16 * 4, null, GL4.GL_MAP_WRITE_BIT);
+
+        } else {
+
+            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferName.get(Buffer.VERTEX));
+            gl.glBufferData(GL4.GL_ARRAY_BUFFER, getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(), GL4.GL_STREAM_DRAW);
+            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
+
+            gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
+            gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
+            gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
         }
 
     }
@@ -360,6 +409,36 @@ public class MeshRenderer extends BaseRenderer  {
 	 */
 	public void setColorAttribute(int colorAttribute) {
 		this.m_colorAttribute = colorAttribute;
+	}
+
+	/**
+	 * @return the vertexBuffer
+	 */
+	public FloatBuffer getVertexBuffer() {
+		return vertexBuffer;
+	}
+
+	/**
+	 * @param vertexBuffer the vertexBuffer to set
+	 */
+	public void setVertexBuffer(float[] vertices) {
+		setVertices(vertices);
+		this.vertexBuffer = GLBuffers.newDirectFloatBuffer(vertices);
+	}
+
+	/**
+	 * @return the elementBuffer
+	 */
+	public ShortBuffer getIndicesBuffer() {
+		return elementBuffer;
+	}
+
+	/**
+	 * @param elementBuffer the elementBuffer to set
+	 */
+	public void setIndicesBuffer(short[] indices) {
+		setIndices(indices);
+		this.elementBuffer = GLBuffers.newDirectShortBuffer(indices);
 	}
 
 	
