@@ -21,9 +21,12 @@ public class MeshRenderer extends BaseRenderer  {
 	private ShaderComponent m_ShaderComponent;
 	
 	private float[] m_vertices = { 
-			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), 
-			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			(float) -Math.random(), (float) -Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(), (float) Math.random(),
         };
 	
 	private float[] m_colors = {
@@ -34,7 +37,7 @@ public class MeshRenderer extends BaseRenderer  {
         };
 	
 	private short[] m_indices = {
-				0, 1, 2
+				0, 1, 2, 3, 0, 4, 5
             };
 	
 	
@@ -181,14 +184,14 @@ public class MeshRenderer extends BaseRenderer  {
         gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.POSITION, Semantic.Stream.A);
         gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.COLOR, Semantic.Stream.A);
 
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 2, GL_FLOAT, false, 0);
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 2 * 4);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 3, GL_FLOAT, false, 0);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 3 * 4);
 
         gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.POSITION);
         gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.COLOR);
 
         gl.glVertexArrayElementBuffer(vertexArrayName.get(0), bufferName.get(Buffer.ELEMENT));
-        gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (2 + 3) * 4);
+        gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (3 + 3) * 4);
     }
 	
 	private void initDebug(GL4 gl) {
