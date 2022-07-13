@@ -155,9 +155,6 @@ public class MeshRenderer extends BaseRenderer  {
 
         getGLobject().glUseProgram(m_ShaderComponent.name);
         getGLobject().glBindVertexArray(0);
-        
-        
-        System.out.println(getVertices());
 		
 	}
 	
@@ -183,12 +180,22 @@ public class MeshRenderer extends BaseRenderer  {
             }).start();
         case KeyEvent.VK_PAGE_UP:
         	GL4 gl = getGLobject();
-        	/*
-        	setVertexBuffer(new float[] {
+        	setIndicesBuffer(new short[] {
 				1, 0, 2,
 				3, 2, 1,
             });
-            */
+        	
+        	setVertexBuffer(new float[] { 
+        			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			
+        			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+                });
         	reloadBuffers(gl);
         }
     }
@@ -249,30 +256,34 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	
 	private void reloadBuffers(GL4 gl) {
+		gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferName.get(Buffer.VERTEX));
+    	gl.glBufferSubData(GL4.GL_ARRAY_BUFFER, 0, getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer());
+    	gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 
-        if (!bug1287) {
-
-            gl.glNamedBufferStorage(bufferName.get(Buffer.VERTEX), getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(),
-                    GL4.GL_STATIC_DRAW);
-            gl.glNamedBufferStorage(bufferName.get(Buffer.ELEMENT), getIndicesBuffer().capacity() * Short.BYTES,
-            		getIndicesBuffer(), GL4.GL_STATIC_DRAW);
-
-            gl.glNamedBufferStorage(bufferName.get(Buffer.GLOBAL_MATRICES), 16 * 4 * 2, null, GL4.GL_MAP_WRITE_BIT);
-            gl.glNamedBufferStorage(bufferName.get(Buffer.MODEL_MATRIX), 16 * 4, null, GL4.GL_MAP_WRITE_BIT);
-
-        } else {
-
-            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferName.get(Buffer.VERTEX));
-            gl.glBufferData(GL4.GL_ARRAY_BUFFER, getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer(), GL4.GL_STREAM_DRAW);
-            gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
-
-            gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
-            gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
-            gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
-
+        gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
+    	gl.glBufferSubData(GL4.GL_ARRAY_BUFFER, 0, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer());
+    	gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
+    	
+    	System.out.println(getVertices().toString());
     }
 	
+	private void reloadVertexArray(GL4 gl) {
+		gl.glDeleteVertexArrays(1, vertexArrayName);
+
+        gl.glCreateVertexArrays(1, vertexArrayName);
+
+        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.POSITION, Semantic.Stream.A);
+        gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.COLOR, Semantic.Stream.A);
+
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 3, GL_FLOAT, false, 0);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 3 * 4);
+
+        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.POSITION);
+        gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.COLOR);
+
+        gl.glVertexArrayElementBuffer(vertexArrayName.get(0), bufferName.get(Buffer.ELEMENT));
+        gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (3 + 3) * 4);
+    }
 	
 	private void initVertexArray(GL4 gl) {
 
