@@ -118,17 +118,6 @@ public class MeshRenderer extends BaseRenderer  {
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
 
-        // model matrix
-        {
-            long now = System.currentTimeMillis();
-            float diff = (float) (now - getStart()) / 1_000;
-
-            float[] scale = FloatUtil.makeScale(new float[16], true, 0.5f, 0.5f, 0.5f);
-            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, diff, 0f, 0f, 1f, new float[3]);
-            float[] model = FloatUtil.multMatrix(scale, rotateZ);
-            modelMatrixPointer.asFloatBuffer().put(model);
-        }
-
         getGLobject().glUseProgram(m_ShaderComponent.name);
         getGLobject().glBindVertexArray(vertexArrayName.get(0));
 
