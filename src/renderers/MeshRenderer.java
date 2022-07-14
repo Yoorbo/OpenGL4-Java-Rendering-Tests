@@ -31,10 +31,10 @@ public class MeshRenderer extends BaseRenderer  {
 			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			
-			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			-m_cube_size*2, -m_cube_size*2, -m_cube_size*2, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			-m_cube_size*2, m_cube_size*2, -m_cube_size*2, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size*2, -m_cube_size*2, -m_cube_size*2, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+			m_cube_size*2, m_cube_size*2, -m_cube_size*2, (float) Math.random(), (float) Math.random(), (float) Math.random(),
        };
 	
 	private float[] m_colors = {
@@ -223,10 +223,10 @@ public class MeshRenderer extends BaseRenderer  {
         			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
         			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
         			
-        			-m_cube_size*2, -m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			-m_cube_size*2, m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size*2, -m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size*2, m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
                 });
         	
         	getVertexBuffer().rewind();
