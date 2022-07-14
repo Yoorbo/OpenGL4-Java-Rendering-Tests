@@ -7,7 +7,6 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.common.nio.Buffers;
-import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
@@ -55,8 +54,6 @@ public class MeshRenderer extends BaseRenderer  {
 				0, 4, 6,
 				2, 6, 0
             };
-	
-	private int temp_toggle = 1;
 	
 	
 	private interface Buffer {

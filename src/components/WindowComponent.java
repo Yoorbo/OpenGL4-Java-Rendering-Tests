@@ -13,7 +13,6 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.Animator;
 
 public class WindowComponent extends BaseComponent implements GLEventListener, KeyListener {
