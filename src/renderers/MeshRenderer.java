@@ -23,7 +23,7 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
 	
-	private float m_cube_size = 0.3f;
+	private float m_cube_size = 0.1f;
 	
 	private float[] m_vertices = { 
 			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
@@ -35,9 +35,7 @@ public class MeshRenderer extends BaseRenderer  {
 			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        };
-	
-	private float counter = 0f;
+       };
 	
 	private float[] m_colors = {
 				0.0f, 0.0f, 1.0f,
@@ -54,7 +52,7 @@ public class MeshRenderer extends BaseRenderer  {
 				7, 6, 5
             };
 	
-	private boolean temp_toggle = true;
+	private int temp_toggle = 1;
 	
 	
 	 private interface Buffer {
@@ -149,7 +147,7 @@ public class MeshRenderer extends BaseRenderer  {
                 GL4.GL_UNSIGNED_SHORT,
                 0);
 
-        getGLobject().glUseProgram(m_ShaderComponent.name);
+        getGLobject().glUseProgram(0);
         getGLobject().glBindVertexArray(0);
         
         getGLobject().glFlush();
@@ -177,28 +175,47 @@ public class MeshRenderer extends BaseRenderer  {
         	new Thread(() -> {
                 getWindow().destroy();
             }).start();
+        	break;
         case KeyEvent.VK_PAGE_UP:
         	
         	getIndicesBuffer().rewind();
         	
-        	if(temp_toggle) {
+        	switch(temp_toggle) {
+        	case 1:
         		setIndicesBuffer(new short[] {
             			1, 0, 2,
         				//3, 2, 1,
                 });
-        	} else {
+        		break;
+        	case 2:
         		setIndicesBuffer(new short[] {
-            			//1, 0, 2,
+        				1, 0, 2,
         				3, 2, 1,
                 });
+        		break;
+        	case 3:
+        		setIndicesBuffer(new short[] {
+        				5, 4, 6,
+                });
+        		break;
+        	case 4:
+        		setIndicesBuffer(new short[] {
+        				5, 4, 6,
+        				7, 6, 5
+                });
+        		temp_toggle = 0;
+        		break;
         	}
-        	temp_toggle = !temp_toggle;
-        	
-        	getIndicesBuffer().rewind();
+        	temp_toggle += 1;
         	
         	System.out.println(getIndicesBuffer().get(1));
         	
+        	getIndicesBuffer().rewind();
         	
+        	
+        	
+        	
+        	getVertexBuffer().rewind();
         	
         	setVertexBuffer(new float[] { 
         			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
@@ -206,14 +223,15 @@ public class MeshRenderer extends BaseRenderer  {
         			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
         			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
         			
-        			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size*2, -m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			-m_cube_size*2, m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size*2, -m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+        			m_cube_size*2, m_cube_size*2, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
                 });
         	
         	getVertexBuffer().rewind();
         	
+        	System.out.println(getVertexBuffer().get(1));
         	
         	reloadBuffers(gl);
         }
@@ -287,6 +305,7 @@ public class MeshRenderer extends BaseRenderer  {
     	gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
     	
     	bufferName.rewind();
+    	vertexArrayName.rewind();
        
     }
 	
@@ -305,6 +324,7 @@ public class MeshRenderer extends BaseRenderer  {
 
         gl.glVertexArrayElementBuffer(vertexArrayName.get(0), bufferName.get(Buffer.ELEMENT));
         gl.glVertexArrayVertexBuffer(vertexArrayName.get(0), Semantic.Stream.A, bufferName.get(Buffer.VERTEX), 0, (3 + 3) * 4);
+        
     }
 	
 	private void initDebug(GL4 gl) {
