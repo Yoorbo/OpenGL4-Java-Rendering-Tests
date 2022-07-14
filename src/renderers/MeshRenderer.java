@@ -23,18 +23,6 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	private float m_cube_size = 0.1f;
 	
-	private float[] m_vertices = { 
-			-m_cube_size, -m_cube_size, m_cube_size, 1.0f, 0.5f, 1.0f,
-			-m_cube_size, m_cube_size, m_cube_size, 0.0f, 1.0f, 0.0f,
-			m_cube_size, -m_cube_size, m_cube_size, 0.7f, 1.0f, 1.0f,
-			m_cube_size, m_cube_size, m_cube_size, 0.7f, 1.0f, 0.0f,
-			
-			-m_cube_size*2, -m_cube_size*2, -m_cube_size*2, 1.0f, 0.5f, 1.0f,
-			-m_cube_size*2, m_cube_size*2, -m_cube_size*2, 0.0f, 1.0f, 0.0f,
-			m_cube_size*2, -m_cube_size*2, -m_cube_size*2, 0.7f, 1.0f, 1.0f,
-			m_cube_size*2, m_cube_size*2, -m_cube_size*2, 0.7f, 1.0f, 0.0f,
-       };
-	
 	private short[] m_indices = {
 				1, 0, 2,
 				3, 2, 1,
