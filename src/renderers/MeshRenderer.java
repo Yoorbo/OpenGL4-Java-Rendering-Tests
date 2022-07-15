@@ -194,35 +194,6 @@ public class MeshRenderer extends BaseRenderer  {
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
             gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-            IntBuffer uniformBufferOffset = GLBuffers.newDirectIntBuffer(1);
-            gl.glGetIntegerv(GL4.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, uniformBufferOffset);
-            int globalBlockSize = Math.max(16 * 4 * 2, uniformBufferOffset.get(0));
-            int modelBlockSize = Math.max(16 * 4, uniformBufferOffset.get(0));
-
-            gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, bufferName.get(Buffer.GLOBAL_MATRICES));
-            gl.glBufferStorage(GL4.GL_UNIFORM_BUFFER, globalBlockSize, null, GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT);
-            gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
-
-            gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, bufferName.get(Buffer.MODEL_MATRIX));
-            gl.glBufferStorage(GL4.GL_UNIFORM_BUFFER, modelBlockSize, null, GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT);
-            gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
-            
-         // map the transform buffers and keep them mapped
-            globalMatricesPointer = gl.glMapNamedBufferRange(
-                    bufferName.get(Buffer.GLOBAL_MATRICES),
-                    0,
-                    16 * 4 * 2,
-                    GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT); // flags
-
-            modelMatrixPointer = gl.glMapNamedBufferRange(
-                    bufferName.get(Buffer.MODEL_MATRIX),
-                    0,
-                    16 * 4,
-                    GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT);
-            
-            System.out.println(bufferName.get(Buffer.VERTEX));
         }
 
     }
