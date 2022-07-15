@@ -149,10 +149,10 @@ public class MeshRenderer extends BaseRenderer  {
     		cube.translatePos(new Position(0, -0.05f, 0));
         	break;
         case KeyEvent.VK_A:
-    		cube.translatePos(new Position(-0.05f, 0, 0));
+        	m_PhysicsComponent.x_movement = -10;
         	break;
         case KeyEvent.VK_D:
-        	cube.translatePos(new Position(0.05f, 0, 0));
+        	m_PhysicsComponent.x_movement = 10;
         	break;
         case KeyEvent.VK_W:
         	cube.changeScale(new Scale(0.01f, 0.01f, 0.01f));
@@ -162,6 +162,7 @@ public class MeshRenderer extends BaseRenderer  {
         	break;
         }
 	}
+	
 	
 	private void initBuffers(GL4 gl) {
 
