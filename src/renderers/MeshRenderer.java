@@ -127,9 +127,6 @@ public class MeshRenderer extends BaseRenderer  {
 
         GL4 gl = drawable.getGL().getGL4();
 
-        gl.glUnmapNamedBuffer(bufferName.get(Buffer.GLOBAL_MATRICES));
-        gl.glUnmapNamedBuffer(bufferName.get(Buffer.MODEL_MATRIX));
-
         gl.glDeleteProgram(m_ShaderComponent.name);
         gl.glDeleteVertexArrays(1, vertexArrayName);
         gl.glDeleteBuffers(Buffer.MAX, bufferName);
