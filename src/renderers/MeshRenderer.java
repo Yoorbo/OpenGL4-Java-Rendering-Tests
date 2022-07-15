@@ -86,10 +86,10 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		GL4 gl = drawable.getGL().getGL4();
 		
-		
-        getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
-        getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
+        gl.glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
+        gl.glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
         
         counter += 0.001f;
         
@@ -103,22 +103,22 @@ public class MeshRenderer extends BaseRenderer  {
 
         initVertexArray(getGLobject());
         
-        getGLobject().glValidateProgram(m_ShaderComponent.name);
+        gl.glValidateProgram(m_ShaderComponent.name);
 
-        getGLobject().glUseProgram(m_ShaderComponent.name);
+        gl.glUseProgram(m_ShaderComponent.name);
         
-        getGLobject().glBindVertexArray(vertexArrayName.get(0));
+        gl.glBindVertexArray(vertexArrayName.get(0));
 
-        getGLobject().glDrawElements(
+        gl.glDrawElements(
         		GL4.GL_TRIANGLES,
                 cube.getIndices().length,
                 GL4.GL_UNSIGNED_SHORT,
                 0);
 
-        getGLobject().glUseProgram(0);
-        getGLobject().glBindVertexArray(0);
+        gl.glUseProgram(0);
+        gl.glBindVertexArray(0);
         
-        getGLobject().glFlush();
+        gl.glFlush();
 		
 	}
 	
