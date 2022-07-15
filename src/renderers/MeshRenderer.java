@@ -11,17 +11,17 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
-import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.GLBuffers;
 
 import components.ShaderComponent;
+import datastructures.Position;
 import framework.Semantic;
 import objects.Cube;
 
 public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
-	private Cube cube = new Cube();
+	private Cube cube;
 	
 	private interface Buffer {
 
@@ -38,8 +38,13 @@ public class MeshRenderer extends BaseRenderer  {
     private FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4);
     private FloatBuffer clearDepth = GLBuffers.newDirectFloatBuffer(1);
     
-    private FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
-    private ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
+    private FloatBuffer vertexBuffer;
+    private ShortBuffer elementBuffer;
+    
+    
+    private float counter = 0.001f;
+    
+
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
 	
@@ -62,6 +67,14 @@ public class MeshRenderer extends BaseRenderer  {
 		setGLobject(drawable.getGL().getGL4());
 		setProgramId(drawable.getGL().getGL4().glCreateProgram());
 		
+		cube = new Cube();
+		
+		cube.getScale().setAll(0.4f);
+		cube.setPos(new Position(0.2f, 0.4f, 0.4f));
+		
+	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
+	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
+		
 		initDebug(getGLobject());
 
         initBuffers(getGLobject());
@@ -73,8 +86,22 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		
+		
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
+        
+        counter += 0.001f;
+        
+		cube.getScale().setAll(0.4f-counter);
+		cube.setPos(new Position(0.2f+counter, 0.4f, 0.4f));
+		
+	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
+	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
+
+        initBuffers(getGLobject());
+
+        initVertexArray(getGLobject());
         
         getGLobject().glValidateProgram(m_ShaderComponent.name);
 

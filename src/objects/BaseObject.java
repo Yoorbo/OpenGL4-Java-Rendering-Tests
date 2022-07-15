@@ -46,5 +46,17 @@ public abstract class BaseObject extends BaseComponent {
 	public Scale getScale() {
 		return scale;
 	}
+	/**
+	 * @return the pos
+	 */
+	public Position getPos() {
+		return pos;
+	}
+	/**
+	 * @param pos the pos to set
+	 */
+	public void setPos(Position pos) {
+		this.pos = pos;
+	}
 
 }
