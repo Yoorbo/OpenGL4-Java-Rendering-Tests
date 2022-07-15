@@ -1,25 +1,27 @@
 package renderers;
 
-import static com.jogamp.opengl.GL.GL_FLOAT;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
 import com.jogamp.opengl.util.GLBuffers;
 
+import components.PhysicsComponent;
 import components.ShaderComponent;
 import datastructures.Position;
+import datastructures.Scale;
 import framework.Semantic;
 import objects.Cube;
 
 public class MeshRenderer extends BaseRenderer  {
 	
+	private PhysicsComponent m_PhysicsComponent;
 	private ShaderComponent m_ShaderComponent;
 	private Cube cube;
 	
@@ -42,7 +44,8 @@ public class MeshRenderer extends BaseRenderer  {
     private ShortBuffer elementBuffer;
     
     
-    private float counter = 0.001f;
+    
+    private int jumping = 0;
     
 
 	
@@ -68,9 +71,11 @@ public class MeshRenderer extends BaseRenderer  {
 		setProgramId(drawable.getGL().getGL4().glCreateProgram());
 		
 		cube = new Cube();
+		cube.getScale().setAll(0.2f);
+		m_PhysicsComponent = new PhysicsComponent();
+		m_PhysicsComponent.object_to_calc = cube;
 		
-		cube.getScale().setAll(0.4f);
-		cube.setPos(new Position(0.2f, 0.4f, 0.4f));
+		cube.setPos(new Position(0, 0, 0));
 		
 	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
 	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
@@ -91,10 +96,7 @@ public class MeshRenderer extends BaseRenderer  {
         gl.glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         gl.glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
         
-        counter += 0.001f;
-        
-		cube.getScale().setAll(0.4f-counter);
-		cube.setPos(new Position(0.2f+counter, 0.4f, 0.4f));
+        m_PhysicsComponent.calculate();
 		
 	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
 	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
@@ -132,68 +134,34 @@ public class MeshRenderer extends BaseRenderer  {
         gl.glDeleteBuffers(Buffer.MAX, bufferName);
     }
 	
-	/*
 	@Override
     public void keyPressed(KeyEvent e) {  
-		GL4 gl = getGLobject();
-		double convA = Math.toRadians( -rotAngle  + 90); 
         switch (e.getKeyCode()) {
         case KeyEvent.VK_ESCAPE:
         	new Thread(() -> {
                 getWindow().destroy();
             }).start();
         	break;
-        case KeyEvent.VK_PAGE_UP:
-        	
-        	setVertexBuffer(new float[] { 
-        			-m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			-m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, -m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, m_cube_size, m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			
-        			-m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			-m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, -m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-        			m_cube_size, m_cube_size, -m_cube_size, (float) Math.random(), (float) Math.random(), (float) Math.random(),
-                });
-        	
-        	reloadBuffers(gl);
+        case KeyEvent.VK_SPACE:
+    		m_PhysicsComponent.jumping = m_PhysicsComponent.jumping <= -20 ? 20 : m_PhysicsComponent.jumping;
+        	break;
+        case KeyEvent.VK_CONTROL:
+    		cube.translatePos(new Position(0, -0.05f, 0));
+        	break;
+        case KeyEvent.VK_A:
+    		cube.translatePos(new Position(-0.05f, 0, 0));
         	break;
         case KeyEvent.VK_D:
-            transZ += Math.sin( convA - Math.PI / 2 );
-            transX -= Math.cos( convA - Math.PI / 2 );
-            break;
-	    case KeyEvent.VK_A:
-	            transZ -= Math.sin( convA - Math.PI / 2 );
-	            transX += Math.cos( convA - Math.PI / 2 );
-	            break;
-	    case KeyEvent.VK_W:
-	            transZ += Math.sin( convA );
-	            transX -= Math.cos( convA );
-	            break;
-	    case KeyEvent.VK_S:
-	            transZ -= Math.sin( convA );
-	            transX += Math.cos( convA );
-	            break;
-	    case KeyEvent.VK_Z:
-	             rotAngle -= (4);
-	             if (rotAngle < 0){
-	                     rotAngle += 360;
-	             }
-	
-	            break;
-	    case KeyEvent.VK_X:
-	            rotAngle += (4);
-	
-	            break;
-	    default:
-	            break;
+        	cube.translatePos(new Position(0.05f, 0, 0));
+        	break;
+        case KeyEvent.VK_W:
+        	cube.changeScale(new Scale(0.01f, 0.01f, 0.01f));
+        	break;
+        case KeyEvent.VK_S:
+            cube.changeScale(new Scale(-0.01f, -0.01f, -0.01f));
+        	break;
         }
-   
-        rotAngle %= 360; //mod 360
-
-    }
-    */
+	}
 	
 	private void initBuffers(GL4 gl) {
 
@@ -222,22 +190,6 @@ public class MeshRenderer extends BaseRenderer  {
 
     }
 	
-	
-	private void reloadBuffers(GL4 gl) {
-		
-		gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, bufferName.get(Buffer.VERTEX));
-    	gl.glBufferSubData(GL4.GL_ARRAY_BUFFER, 0, getVertexBuffer().capacity() * Float.BYTES, getVertexBuffer());
-    	gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
-
-        gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, bufferName.get(Buffer.ELEMENT));
-    	gl.glBufferSubData(GL4.GL_ARRAY_BUFFER, 0, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer());
-    	gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
-    	
-    	bufferName.rewind();
-    	vertexArrayName.rewind();
-       
-    }
-	
 	private void initVertexArray(GL4 gl) {
 
         gl.glCreateVertexArrays(1, vertexArrayName);
@@ -245,8 +197,8 @@ public class MeshRenderer extends BaseRenderer  {
         gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.POSITION, Semantic.Stream.A);
         gl.glVertexArrayAttribBinding(vertexArrayName.get(0), Semantic.Attr.COLOR, Semantic.Stream.A);
 
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 3, GL_FLOAT, false, 0);
-        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL_FLOAT, false, 3 * 4);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.POSITION, 3, GL4.GL_FLOAT, false, 0);
+        gl.glVertexArrayAttribFormat(vertexArrayName.get(0), Semantic.Attr.COLOR, 3, GL4.GL_FLOAT, false, 3 * 4);
 
         gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.POSITION);
         gl.glEnableVertexArrayAttrib(vertexArrayName.get(0), Semantic.Attr.COLOR);
@@ -362,6 +314,20 @@ public class MeshRenderer extends BaseRenderer  {
 	public void setIndicesBuffer(short[] indices) {
 		this.elementBuffer.put(indices);
 		this.elementBuffer.rewind();
+	}
+
+	/**
+	 * @return the physicsComponent
+	 */
+	public PhysicsComponent getPhysicsComponent() {
+		return m_PhysicsComponent;
+	}
+
+	/**
+	 * @param physicsComponent the physicsComponent to set
+	 */
+	public void setPhysicsComponent(PhysicsComponent physicsComponent) {
+		this.m_PhysicsComponent = physicsComponent;
 	}
 
 	

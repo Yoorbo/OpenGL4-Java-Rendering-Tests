@@ -13,6 +13,10 @@ public abstract class BaseObject extends BaseComponent {
 	
 	protected short[] m_indices;
 	
+	protected float[] rotation;
+	
+	protected double rotAngle;
+	
 	public BaseObject() {
 		
 	}
@@ -46,6 +50,7 @@ public abstract class BaseObject extends BaseComponent {
 	public Scale getScale() {
 		return scale;
 	}
+	
 	/**
 	 * @return the pos
 	 */
@@ -57,6 +62,19 @@ public abstract class BaseObject extends BaseComponent {
 	 */
 	public void setPos(Position pos) {
 		this.pos = pos;
+		this.recalc();
+		
 	}
-
+	
+	public void translatePos(Position pos) {
+		this.pos.x += pos.x; this.pos.y += pos.y; this.pos.z += pos.z;
+		this.recalc();
+	}
+	
+	public void changeScale(Scale addScale) {
+		this.scale.x += addScale.x; this.scale.y += addScale.y; this.scale.z += addScale.z;
+		this.recalc();
+	}
+	
+	protected void recalc() {};
 }
