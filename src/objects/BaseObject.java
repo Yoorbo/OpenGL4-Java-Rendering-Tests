@@ -1,43 +1,48 @@
 package objects;
 
 import components.BaseComponent;
+import datastructures.Scale;
 
 public abstract class BaseObject extends BaseComponent {
 	
+	protected Scale scale = new Scale();
 	
+	protected float[] m_vertices;
 	
-	private float[] m_vertices = { 
-			-1.0f*scale, -1.0f*scale, 1.0f*scale, 1.0f, 0.5f, 1.0f,
-			-1.0f*scale, 1.0f*scale, 1.0f*scale, 0.0f, 1.0f, 0.0f,
-			1.0f*scale, -1.0f*scale, 1.0f*scale, 0.7f, 1.0f, 1.0f,
-			1.0f*scale, 1.0f*scale, 1.0f*scale, 0.7f, 1.0f, 0.0f,
-			
-			-1.0f*scale*2, -1.0f*scale*2, -1.0f*scale*2, 1.0f, 0.5f, 1.0f,
-			-1.0f*scale*2, 1.0f*scale*2, -1.0f*scale*2, 0.0f, 1.0f, 0.0f,
-			1.0f*scale*2, -1.0f*scale*2, -1.0f*scale*2, 0.7f, 1.0f, 1.0f,
-			1.0f*scale*2, 1.0f*scale*2, -1.0f*scale*2, 0.7f, 1.0f, 0.0f,
-       };
+	protected short[] m_indices;
 	
-	private short[] m_indices = {
-			1, 0, 2,
-			3, 2, 1,
-			
-			5, 4, 6,
-			7, 6, 5,
-			
-			2, 3, 6,
-			7, 3, 6,
-			
-			0, 1, 4,
-			5, 4, 1,
-			
-			3, 7, 1,
-			5, 7, 1,
-			
-			0, 4, 6,
-			2, 6, 0
-        };
 	public BaseObject() {
 		
 	}
+	/**
+	 * @return the indices
+	 */
+	public short[] getIndices() {
+		return m_indices;
+	}
+	/**
+	 * @param indices the indices to set
+	 */
+	public void setIndices(short[] indices) {
+		this.m_indices = indices;
+	}
+	/**
+	 * @return the vertices
+	 */
+	public float[] getVertices() {
+		return m_vertices;
+	}
+	/**
+	 * @param vertices the vertices to set
+	 */
+	public void setVertices(float[] vertices) {
+		this.m_vertices = vertices;
+	}
+	/**
+	 * @return the scale
+	 */
+	public Scale getScale() {
+		return scale;
+	}
+
 }

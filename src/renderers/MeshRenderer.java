@@ -16,33 +16,12 @@ import com.jogamp.opengl.util.GLBuffers;
 
 import components.ShaderComponent;
 import framework.Semantic;
+import objects.Cube;
 
 public class MeshRenderer extends BaseRenderer  {
 	
 	private ShaderComponent m_ShaderComponent;
-	
-	private float m_cube_size = 0.1f;
-	
-	private short[] m_indices = {
-				1, 0, 2,
-				3, 2, 1,
-				
-				5, 4, 6,
-				7, 6, 5,
-				
-				2, 3, 6,
-				7, 3, 6,
-				
-				0, 1, 4,
-				5, 4, 1,
-				
-				3, 7, 1,
-				5, 7, 1,
-				
-				0, 4, 6,
-				2, 6, 0
-            };
-	
+	private Cube cube = new Cube();
 	
 	private interface Buffer {
 
@@ -59,8 +38,8 @@ public class MeshRenderer extends BaseRenderer  {
     private FloatBuffer clearColor = GLBuffers.newDirectFloatBuffer(4);
     private FloatBuffer clearDepth = GLBuffers.newDirectFloatBuffer(1);
     
-    private FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(m_vertices);
-    private ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(m_indices);
+    private FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
+    private ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
 	
@@ -94,47 +73,18 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		
-		// view matrix
-        {
-            float[] view = FloatUtil.makeIdentity(new float[16]);
-            for (int i = 0; i < 16; i++)
-                globalMatricesPointer.putFloat(16 * 4 + i * 4, view[i]);
-        }
-
         getGLobject().glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         getGLobject().glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
-        
-        {
-            long now = System.currentTimeMillis();
-            float diff = (float) (now - getStart()) / 1_000;
-
-            float[] scale = FloatUtil.makeScale(new float[16], true, 0.5f, 0.5f, 0.5f);
-            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, diff, 0f, 0f, 1f, new float[3]);
-            float[] model = FloatUtil.multMatrix(scale, rotateZ);
-            modelMatrixPointer.asFloatBuffer().put(model);
-        }
         
         getGLobject().glValidateProgram(m_ShaderComponent.name);
 
         getGLobject().glUseProgram(m_ShaderComponent.name);
         
         getGLobject().glBindVertexArray(vertexArrayName.get(0));
-        
-
-        getGLobject().glBindBufferBase(
-                GL4.GL_UNIFORM_BUFFER,
-                Semantic.Uniform.TRANSFORM0,
-                bufferName.get(Buffer.GLOBAL_MATRICES));
-
-        getGLobject().glBindBufferBase(
-        		GL4.GL_UNIFORM_BUFFER,
-                Semantic.Uniform.TRANSFORM1,
-                bufferName.get(Buffer.MODEL_MATRIX));
 
         getGLobject().glDrawElements(
         		GL4.GL_TRIANGLES,
-                m_indices.length,
+                cube.getIndices().length,
                 GL4.GL_UNSIGNED_SHORT,
                 0);
 
@@ -362,34 +312,6 @@ public class MeshRenderer extends BaseRenderer  {
 	}
 
 	/**
-	 * @return the vertices
-	 */
-	public float[] getVertices() {
-		return m_vertices;
-	}
-
-	/**
-	 * @param vertices the vertices to set
-	 */
-	public void setVertices(float[] vertices) {
-		this.m_vertices = vertices;
-	}
-
-	/**
-	 * @return the indices
-	 */
-	public short[] getIndices() {
-		return m_indices;
-	}
-
-	/**
-	 * @param indices the indices to set
-	 */
-	public void setIndices(short[] indices) {
-		this.m_indices = indices;
-	}
-
-	/**
 	 * @return the positionAttribute
 	 */
 	public int getPositionAttribute() {
@@ -428,7 +350,6 @@ public class MeshRenderer extends BaseRenderer  {
 	 * @param vertexBuffer the vertexBuffer to set
 	 */
 	public void setVertexBuffer(float[] vertices) {
-		setVertices(vertices);
 		this.vertexBuffer.put(vertices);
 		this.vertexBuffer.rewind();
 	}
@@ -444,7 +365,6 @@ public class MeshRenderer extends BaseRenderer  {
 	 * @param elementBuffer the elementBuffer to set
 	 */
 	public void setIndicesBuffer(short[] indices) {
-		setIndices(indices);
 		this.elementBuffer.put(indices);
 		this.elementBuffer.rewind();
 	}
