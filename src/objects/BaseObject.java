@@ -1,11 +1,13 @@
 package objects;
 
 import components.BaseComponent;
+import datastructures.Position;
 import datastructures.Scale;
 
 public abstract class BaseObject extends BaseComponent {
 	
 	protected Scale scale = new Scale();
+	protected Position pos = new Position(0, 0, 0);
 	
 	protected float[] m_vertices;
 	

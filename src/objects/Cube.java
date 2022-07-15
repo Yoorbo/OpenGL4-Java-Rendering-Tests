@@ -5,15 +5,15 @@ public class Cube extends BaseObject {
 		scale.setAll(0.2f);
 		
 		m_vertices = new float[]{ 
-				-scale.x, -scale.y, scale.z, 1.0f, 0.5f, 1.0f,
-				-scale.x, scale.y, scale.z, 0.0f, 1.0f, 0.0f,
-				scale.x, -scale.y, scale.z, 0.7f, 1.0f, 1.0f,
-				scale.x, scale.y, scale.z, 0.7f, 1.0f, 0.0f,
+				-scale.x + pos.x, -scale.y + pos.y, scale.z + pos.z, 1.0f, 0.5f, 1.0f,
+				-scale.x + pos.x, scale.y + pos.y, scale.z + pos.z, 0.0f, 1.0f, 0.0f,
+				scale.x + pos.x, -scale.y + pos.y, scale.z + pos.z, 0.7f, 1.0f, 1.0f,
+				scale.x + pos.x, scale.y + pos.y, scale.z + pos.z, 0.7f, 1.0f, 0.0f,
 				
-				-scale.x*2, -scale.y*2, -scale.z*2, 1.0f, 0.5f, 1.0f,
-				-scale.x*2, scale.y*2, -scale.z*2, 0.0f, 1.0f, 0.0f,
-				scale.x*2, -scale.y*2, -scale.z*2, 0.7f, 1.0f, 1.0f,
-				scale.x*2, scale.y*2, -scale.z*2, 0.7f, 1.0f, 0.0f,
+				-scale.x*2 + pos.x, -scale.y*2 + pos.y, -scale.z*2 + pos.z, 1.0f, 0.5f, 1.0f,
+				-scale.x*2 + pos.x, scale.y*2 + pos.y, -scale.z*2 + pos.z, 0.0f, 1.0f, 0.0f,
+				scale.x*2 + pos.x, -scale.y*2 + pos.y, -scale.z*2 + pos.z, 0.7f, 1.0f, 1.0f,
+				scale.x*2 + pos.x, scale.y*2 + pos.y, -scale.z*2 + pos.z, 0.7f, 1.0f, 0.0f,
 	       };
 		
 		m_indices = new short[] {
