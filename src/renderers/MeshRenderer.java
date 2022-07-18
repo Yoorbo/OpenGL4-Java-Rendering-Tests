@@ -5,6 +5,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -43,10 +44,6 @@ public class MeshRenderer extends BaseRenderer  {
     private FloatBuffer vertexBuffer;
     private ShortBuffer elementBuffer;
     
-    
-    
-    private int jumping = 0;
-    
 
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
@@ -66,27 +63,31 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
+		GL4 gl = drawable.getGL().getGL4();
 		setDrawable(drawable);
-		setGLobject(drawable.getGL().getGL4());
-		setProgramId(drawable.getGL().getGL4().glCreateProgram());
+		setGLobject(gl);
+		setProgramId(gl.glCreateProgram());
 		
 		cube = new Cube();
 		cube.getScale().setAll(0.2f);
 		m_PhysicsComponent = new PhysicsComponent();
 		m_PhysicsComponent.object_to_calc = cube;
-		
+	
 		cube.setPos(new Position(0, 0, 0));
 		
 	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
 	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
-		
-		initDebug(getGLobject());
+	    
+	    AWTGraphicsDevice device =  AWTGraphicsDevice.createDefault();
+	    
+	    
+		initDebug(gl);
 
-        initBuffers(getGLobject());
+        initBuffers(gl);
 
-        initVertexArray(getGLobject());
+        initVertexArray(gl);
 		
-		m_ShaderComponent = new ShaderComponent(getGLobject(), "src/resources/shaders", "default", "default");
+		m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "default", "default");
 	}
 	
 	@Override
@@ -136,31 +137,25 @@ public class MeshRenderer extends BaseRenderer  {
 	
 	@Override
     public void keyPressed(KeyEvent e) {  
-        switch (e.getKeyCode()) {
-        case KeyEvent.VK_ESCAPE:
-        	new Thread(() -> {
+    	if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+    		new Thread(() -> {
                 getWindow().destroy();
             }).start();
-        	break;
-        case KeyEvent.VK_SPACE:
+    	}	
+        	
+    	if (e.getKeyCode() == KeyEvent.VK_SPACE) {
     		m_PhysicsComponent.jumping = m_PhysicsComponent.jumping <= -20 ? 20 : m_PhysicsComponent.jumping;
-        	break;
-        case KeyEvent.VK_CONTROL:
+    	} if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
     		cube.translatePos(new Position(0, -0.05f, 0));
-        	break;
-        case KeyEvent.VK_A:
-        	m_PhysicsComponent.x_movement = -10;
-        	break;
-        case KeyEvent.VK_D:
-        	m_PhysicsComponent.x_movement = 10;
-        	break;
-        case KeyEvent.VK_W:
-        	cube.changeScale(new Scale(0.01f, 0.01f, 0.01f));
-        	break;
-        case KeyEvent.VK_S:
-            cube.changeScale(new Scale(-0.01f, -0.01f, -0.01f));
-        	break;
-        }
+    	} if (e.getKeyCode() == KeyEvent.VK_A) {
+    		m_PhysicsComponent.x_movement = -20;
+    	} if (e.getKeyCode() == KeyEvent.VK_D) {
+    		m_PhysicsComponent.x_movement = 20;
+    	} if (e.getKeyCode() == KeyEvent.VK_W) {
+    		cube.changeScale(new Scale(0.01f, 0.01f, 0.01f));
+    	} if (e.getKeyCode() == KeyEvent.VK_S) {
+    		cube.changeScale(new Scale(-0.01f, -0.01f, -0.01f));
+    	}
 	}
 	
 	
@@ -188,7 +183,7 @@ public class MeshRenderer extends BaseRenderer  {
             gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
         }
-
+		//getGLobject().glGetIntegerv(GL4.GL_CONTEXT_FLAGS, bufferName);
     }
 	
 	private void initVertexArray(GL4 gl) {
