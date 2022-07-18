@@ -1,3 +1,4 @@
+
 #version 450
 
 
@@ -17,6 +18,5 @@ layout (location = FRAG_COLOR) out vec4 outputColor;
 void main()
 {
     // We simply pad the interpolatedColor
-    //outputColor = vec4(interpolatedColor, 1);
-    outColor = vec4(interpolatedColor.x, interpolatedColor.y, interpolatedColor.z, 1.0);
+    outputColor = vec4(interpolatedColor, 1);
 }

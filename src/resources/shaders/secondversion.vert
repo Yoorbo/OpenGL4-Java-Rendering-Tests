@@ -3,10 +3,10 @@
 #include semantic.glsl
 
 // Incoming vertex position, Model Space.
-layout (location = POSITION) in vec3 inPosition;
+layout (location = POSITION) in vec2 position;
 
 // Incoming vertex color.
-layout (location = COLOR) in vec3 inColor;
+layout (location = COLOR) in vec3 color;
 
 // Projection and view matrices.
 layout (binding = TRANSFORM0) uniform Transform0
@@ -33,5 +33,5 @@ void main() {
     gl_Position = proj * (view * (model * vec4(position, 0, 1)));
 
     // We assign the color to the outgoing variable.
-    interpolatedColor = inColor;
+    interpolatedColor = color;
 }

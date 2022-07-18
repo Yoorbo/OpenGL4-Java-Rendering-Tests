@@ -1,16 +1,17 @@
 package renderers;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.common.nio.Buffers;
-import com.jogamp.nativewindow.awt.AWTGraphicsDevice;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
+import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.GLBuffers;
 
 import components.PhysicsComponent;
@@ -44,6 +45,11 @@ public class MeshRenderer extends BaseRenderer  {
     private FloatBuffer vertexBuffer;
     private ShortBuffer elementBuffer;
     
+    private FloatBuffer matBuffer = GLBuffers.newDirectFloatBuffer(16);
+    private ByteBuffer globalMatricesPointer, modelMatrixPointer;
+    
+    private long start;
+    
 
 	
 	IntBuffer genericBuffer = Buffers.newDirectIntBuffer(2);
@@ -67,6 +73,8 @@ public class MeshRenderer extends BaseRenderer  {
 		setDrawable(drawable);
 		setGLobject(gl);
 		setProgramId(gl.glCreateProgram());
+		start = System.currentTimeMillis();
+		
 		
 		cube = new Cube();
 		cube.getScale().setAll(0.2f);
@@ -85,11 +93,20 @@ public class MeshRenderer extends BaseRenderer  {
         initVertexArray(gl);
 		
 		m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "default", "default");
+		
+		gl.glEnable(GL4.GL_DEPTH_TEST);
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL4 gl = drawable.getGL().getGL4();
+		
+		// view matrix
+        {
+            float[] view = FloatUtil.makeIdentity(new float[16]);
+            for (int i = 0; i < 16; i++)
+                globalMatricesPointer.putFloat(16 * 4 + i * 4, view[i]);
+        }
 		
         gl.glClearBufferfv(GL4.GL_COLOR, 0, clearColor.put(0, 1f).put(1, .5f).put(2, 0f).put(3, 1f));
         gl.glClearBufferfv(GL4.GL_DEPTH, 0, clearDepth.put(0, 1f));
@@ -103,11 +120,33 @@ public class MeshRenderer extends BaseRenderer  {
 
         initVertexArray(getGLobject());
         
+        // model matrix
+        {
+            long now = System.currentTimeMillis();
+            float diff = (float) (now - start) / 1_000;
+
+            float[] scale = FloatUtil.makeScale(new float[16], true, 0.5f, 0.5f, 0.5f);
+            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, diff, 0f, 0f, 1f, new float[3]);
+            float[] model = FloatUtil.multMatrix(scale, rotateZ);
+            modelMatrixPointer.asFloatBuffer().put(model);
+        }
+        
         gl.glValidateProgram(m_ShaderComponent.name);
 
         gl.glUseProgram(m_ShaderComponent.name);
         
         gl.glBindVertexArray(vertexArrayName.get(0));
+        
+
+        gl.glBindBufferBase(
+                GL4.GL_UNIFORM_BUFFER,
+                Semantic.Uniform.TRANSFORM0,
+                bufferName.get(Buffer.GLOBAL_MATRICES));
+
+        gl.glBindBufferBase(
+                GL4.GL_UNIFORM_BUFFER,
+                Semantic.Uniform.TRANSFORM1,
+                bufferName.get(Buffer.MODEL_MATRIX));
 
         gl.glDrawElements(
         		GL4.GL_TRIANGLES,
@@ -180,8 +219,38 @@ public class MeshRenderer extends BaseRenderer  {
             gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, getIndicesBuffer().capacity() * Short.BYTES, getIndicesBuffer(), GL4.GL_STREAM_DRAW);
             gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, 0);
         }
-		//getGLobject().glGetIntegerv(GL4.GL_CONTEXT_FLAGS, bufferName);
+        
+        rotationBuffer(gl);
     }
+	
+	
+	private void rotationBuffer(GL4 gl) {
+		IntBuffer uniformBufferOffset = GLBuffers.newDirectIntBuffer(1);
+        gl.glGetIntegerv(GL4.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, uniformBufferOffset);
+        int globalBlockSize = Math.max(16 * 4 * 2, uniformBufferOffset.get(0));
+        int modelBlockSize = Math.max(16 * 4, uniformBufferOffset.get(0));
+
+        gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, bufferName.get(Buffer.GLOBAL_MATRICES));
+        gl.glBufferStorage(GL4.GL_UNIFORM_BUFFER, globalBlockSize, null, GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT);
+        gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
+
+        gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, bufferName.get(Buffer.MODEL_MATRIX));
+        gl.glBufferStorage(GL4.GL_UNIFORM_BUFFER, modelBlockSize, null, GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT);
+        gl.glBindBuffer(GL4.GL_UNIFORM_BUFFER, 0);
+
+	    // map the transform buffers and keep them mapped
+	    globalMatricesPointer = gl.glMapNamedBufferRange(
+	            bufferName.get(Buffer.GLOBAL_MATRICES),
+	            0,
+	            16 * 4 * 2,
+	            GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT); // flags
+	
+	    modelMatrixPointer = gl.glMapNamedBufferRange(
+	            bufferName.get(Buffer.MODEL_MATRIX),
+	            0,
+	            16 * 4,
+	            GL4.GL_MAP_WRITE_BIT | GL4.GL_MAP_PERSISTENT_BIT | GL4.GL_MAP_COHERENT_BIT | GL4.GL_MAP_INVALIDATE_BUFFER_BIT);
+	}
 	
 	private void initVertexArray(GL4 gl) {
 
