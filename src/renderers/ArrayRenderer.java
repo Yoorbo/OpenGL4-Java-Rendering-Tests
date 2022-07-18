@@ -45,6 +45,10 @@ import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 
+import components.PhysicsComponent;
+import components.ShaderComponent;
+import datastructures.Position;
+import datastructures.Scale;
 import framework.Semantic;
 import objects.Cube;
 
@@ -54,11 +58,10 @@ public class ArrayRenderer extends BaseRenderer {
 		super(title, dimensions);
 		// TODO Auto-generated constructor stub
 	}
-
-	private static GLWindow window;
-    private static Animator animator;
     
     private Cube cube;
+    private PhysicsComponent m_PhysicsComponent;
+	private ShaderComponent m_ShaderComponent;
 
     private interface Buffer {
 
@@ -81,8 +84,6 @@ public class ArrayRenderer extends BaseRenderer {
     // https://jogamp.org/bugzilla/show_bug.cgi?id=1287
     private boolean bug1287 = true;
 
-    private Program program;
-
     private long start;
 
 
@@ -92,14 +93,16 @@ public class ArrayRenderer extends BaseRenderer {
         GL4 gl = drawable.getGL().getGL4();
         
         cube = new Cube();
+        cube.getScale().setAll(0.2f);
+		m_PhysicsComponent = new PhysicsComponent();
 
         initDebug(gl);
 
         initBuffers(gl);
 
         initVertexArray(gl);
-
-        program = new Program(gl, "src/resources/shaders", "secondversion", "secondversion");
+        
+        m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "secondversion", "secondversion");
 
         gl.glEnable(GL_DEPTH_TEST);
 
@@ -108,7 +111,7 @@ public class ArrayRenderer extends BaseRenderer {
 
     private void initDebug(GL4 gl) {
 
-        window.getContext().addGLDebugListener(new GLDebugListener() {
+        getWindow().getContext().addGLDebugListener(new GLDebugListener() {
             @Override
             public void messageSent(GLDebugMessage event) {
                 System.out.println(event);
@@ -217,7 +220,8 @@ public class ArrayRenderer extends BaseRenderer {
     public void display(GLAutoDrawable drawable) {
 
         GL4 gl = drawable.getGL().getGL4();
-
+        
+        m_PhysicsComponent.calculate();
 
         // view matrix
         {
@@ -235,13 +239,31 @@ public class ArrayRenderer extends BaseRenderer {
             long now = System.currentTimeMillis();
             float diff = (float) (now - start) / 1_000;
 
-            float[] scale = FloatUtil.makeScale(new float[16], true, 0.5f, 0.5f, 0.5f);
-            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, diff, diff, diff, 1f, new float[3]);
+            float[] scale = FloatUtil.makeScale(new float[16], true, 
+            		m_PhysicsComponent.current_scale.x,
+            		m_PhysicsComponent.current_scale.y,
+            		m_PhysicsComponent.current_scale.z);
+            /*
+            System.out.println(m_PhysicsComponent.current_scale.x + " " +
+            		m_PhysicsComponent.current_scale.y + " " +
+            		m_PhysicsComponent.current_scale.z);
+            		*/
+            
+            float[] translation = FloatUtil.makeTranslation(new float[16], true,
+            		m_PhysicsComponent.current_pos.x,
+            		m_PhysicsComponent.current_pos.y,
+            		m_PhysicsComponent.current_pos.z
+            		);
+            float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, 
+            		m_PhysicsComponent.current_rot.x,
+            		m_PhysicsComponent.current_rot.y,
+            		m_PhysicsComponent.current_rot.z, 1f, new float[3]);
             float[] model = FloatUtil.multMatrix(scale, rotateZ);
+            model = FloatUtil.multMatrix(model, translation);
             modelMatrixPointer.asFloatBuffer().put(model);
         }
 
-        gl.glUseProgram(program.name);
+        gl.glUseProgram(m_ShaderComponent.name);
         gl.glBindVertexArray(vertexArrayName.get(0));
 
         gl.glBindBufferBase(
@@ -255,7 +277,7 @@ public class ArrayRenderer extends BaseRenderer {
                 bufferName.get(Buffer.MODEL_MATRIX));
 
         gl.glDrawElements(
-                GL_TRIANGLES,
+                GL4.GL_LINES,
                 cube.getIndices().length,
                 GL_UNSIGNED_SHORT,
                 0);
@@ -284,89 +306,43 @@ public class ArrayRenderer extends BaseRenderer {
         gl.glUnmapNamedBuffer(bufferName.get(Buffer.GLOBAL_MATRICES));
         gl.glUnmapNamedBuffer(bufferName.get(Buffer.MODEL_MATRIX));
 
-        gl.glDeleteProgram(program.name);
+        gl.glDeleteProgram(m_ShaderComponent.name);
         gl.glDeleteVertexArrays(1, vertexArrayName);
         gl.glDeleteBuffers(Buffer.MAX, bufferName);
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            new Thread(() -> {
-                window.destroy();
+    public void keyPressed(KeyEvent e) {  
+    	if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+    		new Thread(() -> {
+                getWindow().destroy();
             }).start();
-        }
-    }
+    	}	
+        	
+    	if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+    		m_PhysicsComponent.jumping = m_PhysicsComponent.jumping <= -20 ? 20 : m_PhysicsComponent.jumping;
+    	} if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+    		cube.translatePos(new Position(0, -0.05f, 0));
+    	} if (e.getKeyCode() == KeyEvent.VK_A) {
+    		m_PhysicsComponent.x_movement = -20;
+    	} if (e.getKeyCode() == KeyEvent.VK_D) {
+    		m_PhysicsComponent.x_movement = 20;
+    	} if (e.getKeyCode() == KeyEvent.VK_W) {
+    		m_PhysicsComponent.translateScale(0.2f, 0.2f, 0.2f, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_S) {
+    		m_PhysicsComponent.translateScale(-0.2f, -0.2f, -0.2f, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+    		m_PhysicsComponent.translateRot(90, 0, 0, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+    		m_PhysicsComponent.translateRot(-90, 0, 0, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_UP) {
+    		m_PhysicsComponent.translateRot(0, 90, 0, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+    		m_PhysicsComponent.translateRot(0, -90, 0, 2);
+    	}
+	}
 
     @Override
     public void keyReleased(KeyEvent e) {
-    }
-
-    private class Program {
-
-        public int name = 0;
-
-        public Program(GL4 gl, String root, String vertex, String fragment) {
-
-            ShaderCode vertShader = ShaderCode.create(gl, GL_VERTEX_SHADER, this.getClass(), root, null, vertex,
-                    "vert", null, true);
-            ShaderCode fragShader = ShaderCode.create(gl, GL_FRAGMENT_SHADER, this.getClass(), root, null, fragment,
-                    "frag", null, true);
-
-            ShaderProgram shaderProgram = new ShaderProgram();
-
-            shaderProgram.add(vertShader);
-            shaderProgram.add(fragShader);
-
-            shaderProgram.init(gl);
-
-            name = shaderProgram.program();
-
-            shaderProgram.link(gl, System.err);
-        }
-    }
-
-    private class GlDebugOutput implements GLDebugListener {
-
-        private int source = 0;
-        private int type = 0;
-        private int id = 0;
-        private int severity = 0;
-        private int length = 0;
-        private String message = null;
-        private boolean received = false;
-
-        public GlDebugOutput() {
-        }
-
-        public GlDebugOutput(int source, int type, int severity) {
-            this.source = source;
-            this.type = type;
-            this.severity = severity;
-            this.message = null;
-            this.id = -1;
-        }
-
-        public GlDebugOutput(String message, int id) {
-            this.source = -1;
-            this.type = -1;
-            this.severity = -1;
-            this.message = message;
-            this.id = id;
-        }
-
-        @Override
-        public void messageSent(GLDebugMessage event) {
-
-            if (event.getDbgSeverity() == GL_DEBUG_SEVERITY_LOW || event.getDbgSeverity() == GL_DEBUG_SEVERITY_NOTIFICATION)
-                System.out.println("GlDebugOutput.messageSent(): " + event);
-            else
-                System.err.println("GlDebugOutput.messageSent(): " + event);
-
-            if (null != message && message == event.getDbgMsg() && id == event.getDbgId())
-                received = true;
-            else if (0 <= source && source == event.getDbgSource() && type == event.getDbgType() && severity == event.getDbgSeverity())
-                received = true;
-        }
     }
 }

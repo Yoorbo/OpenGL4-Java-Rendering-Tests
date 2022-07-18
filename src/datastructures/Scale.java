@@ -1,6 +1,8 @@
 package datastructures;
 
 public class Scale extends AbstractVector {
+	
+	public int speed = 1;
 
 	public Scale() {
 		super(1.0f, 1.0f, 1.0f);
