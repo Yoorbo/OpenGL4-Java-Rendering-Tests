@@ -9,10 +9,10 @@ public class Cube extends BaseObject {
 				scale.x + getPos().x, -scale.y + getPos().y, scale.z + getPos().z, 0.7f, 1.0f, 1.0f,
 				scale.x + getPos().x, scale.y + getPos().y, scale.z + getPos().z, 0.7f, 1.0f, 0.0f,
 				
-				-scale.x*2 + getPos().x, -scale.y*2 + getPos().y, -scale.z*2 + getPos().z, 1.0f, 0.5f, 1.0f,
-				-scale.x*2 + getPos().x, scale.y*2 + getPos().y, -scale.z*2 + getPos().z, 0.0f, 1.0f, 0.0f,
-				scale.x*2 + getPos().x, -scale.y*2 + getPos().y, -scale.z*2 + getPos().z, 0.7f, 1.0f, 1.0f,
-				scale.x*2 + getPos().x, scale.y*2 + getPos().y, -scale.z*2 + getPos().z, 0.7f, 1.0f, 0.0f,
+				-scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, 1.0f, 0.5f, 1.0f,
+				-scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, 0.0f, 1.0f, 0.0f,
+				scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, 0.7f, 1.0f, 1.0f,
+				scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, 0.7f, 1.0f, 0.0f,
 	       };
 		
 		m_indices = new short[] {

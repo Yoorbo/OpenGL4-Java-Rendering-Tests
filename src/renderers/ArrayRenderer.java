@@ -29,7 +29,6 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -39,7 +38,6 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
-import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.Animator;
@@ -50,16 +48,17 @@ import com.jogamp.opengl.util.glsl.ShaderProgram;
 import framework.Semantic;
 import objects.Cube;
 
-public class AlternateRenderer implements GLEventListener, KeyListener {
+public class ArrayRenderer extends BaseRenderer {
 
-    private static GLWindow window;
+	public ArrayRenderer(String title, ScreenDimension dimensions) {
+		super(title, dimensions);
+		// TODO Auto-generated constructor stub
+	}
+
+	private static GLWindow window;
     private static Animator animator;
     
     private Cube cube;
-
-    public static void main(String[] args) {
-        new AlternateRenderer().setup();
-    }
 
     private interface Buffer {
 
@@ -85,35 +84,6 @@ public class AlternateRenderer implements GLEventListener, KeyListener {
     private Program program;
 
     private long start;
-
-
-    private void setup() {
-
-        GLProfile glProfile = GLProfile.get(GLProfile.GL4);
-        GLCapabilities glCapabilities = new GLCapabilities(glProfile);
-
-        window = GLWindow.create(glCapabilities);
-
-        window.setTitle("Test");
-        window.setSize(1024, 768);
-
-        window.setContextCreationFlags(GLContext.CTX_OPTION_DEBUG);
-        window.setVisible(true);
-
-        window.addGLEventListener(this);
-        window.addKeyListener(this);
-
-        animator = new Animator(window);
-        animator.start();
-
-        window.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDestroyed(WindowEvent e) {
-                animator.stop();
-                System.exit(1);
-            }
-        });
-    }
 
 
     @Override
