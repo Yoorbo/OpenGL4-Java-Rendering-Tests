@@ -8,15 +8,15 @@ public class Cube extends BaseObject {
 	public Cube() {
 		
 		m_vertices = new float[]{ 
-				-scale.x + getPos().x, -scale.y + getPos().y, scale.z + getPos().z, 1.0f, 0.5f, 1.0f,
-				-scale.x + getPos().x, scale.y + getPos().y, scale.z + getPos().z, 0.0f, 1.0f, 0.0f,
-				scale.x + getPos().x, -scale.y + getPos().y, scale.z + getPos().z, 0.7f, 1.0f, 1.0f,
-				scale.x + getPos().x, scale.y + getPos().y, scale.z + getPos().z, 0.7f, 1.0f, 0.0f,
+				-scale.x + getPos().x, -scale.y + getPos().y, scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				-scale.x + getPos().x, scale.y + getPos().y, scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				scale.x + getPos().x, -scale.y + getPos().y, scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				scale.x + getPos().x, scale.y + getPos().y, scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 				
-				-scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, 1.0f, 0.5f, 1.0f,
-				-scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, 0.0f, 1.0f, 0.0f,
-				scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, 0.7f, 1.0f, 1.0f,
-				scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, 0.7f, 1.0f, 0.0f,
+				-scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				-scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				scale.x + getPos().x, -scale.y + getPos().y, -scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
+				scale.x + getPos().x, scale.y + getPos().y, -scale.z + getPos().z, (float) Math.random(), (float) Math.random(), (float) Math.random(),
 	       };
 		
 		

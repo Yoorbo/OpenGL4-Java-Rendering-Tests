@@ -8,14 +8,9 @@ import static com.jogamp.opengl.GL.GL_FLOAT;
 import static com.jogamp.opengl.GL.GL_MAP_INVALIDATE_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_MAP_WRITE_BIT;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
-import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_SHORT;
 import static com.jogamp.opengl.GL2ES2.GL_DEBUG_SEVERITY_HIGH;
-import static com.jogamp.opengl.GL2ES2.GL_DEBUG_SEVERITY_LOW;
 import static com.jogamp.opengl.GL2ES2.GL_DEBUG_SEVERITY_MEDIUM;
-import static com.jogamp.opengl.GL2ES2.GL_DEBUG_SEVERITY_NOTIFICATION;
-import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
-import static com.jogamp.opengl.GL2ES2.GL_VERTEX_SHADER;
 import static com.jogamp.opengl.GL2ES3.GL_COLOR;
 import static com.jogamp.opengl.GL2ES3.GL_DEPTH;
 import static com.jogamp.opengl.GL2ES3.GL_UNIFORM_BUFFER;
@@ -29,26 +24,16 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDebugListener;
 import com.jogamp.opengl.GLDebugMessage;
-import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
-import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.GLBuffers;
-import com.jogamp.opengl.util.glsl.ShaderCode;
-import com.jogamp.opengl.util.glsl.ShaderProgram;
 
 import components.PhysicsComponent;
 import components.ShaderComponent;
 import datastructures.Position;
-import datastructures.Scale;
 import framework.Semantic;
 import objects.Cube;
 
@@ -83,8 +68,8 @@ public class ArrayRenderer extends BaseRenderer {
     private ByteBuffer globalMatricesPointer, modelMatrixPointer;
     // https://jogamp.org/bugzilla/show_bug.cgi?id=1287
     private boolean bug1287 = true;
-
-    private long start;
+    
+    private boolean lines = false;
 
 
     @Override
@@ -105,8 +90,6 @@ public class ArrayRenderer extends BaseRenderer {
         m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "secondversion", "secondversion");
 
         gl.glEnable(GL_DEPTH_TEST);
-
-        start = System.currentTimeMillis();
     }
 
     private void initDebug(GL4 gl) {
@@ -236,8 +219,6 @@ public class ArrayRenderer extends BaseRenderer {
 
         // model matrix
         {
-            long now = System.currentTimeMillis();
-            float diff = (float) (now - start) / 1_000;
 
             float[] scale = FloatUtil.makeScale(new float[16], true, 
             		m_PhysicsComponent.current_scale.x,
@@ -275,13 +256,21 @@ public class ArrayRenderer extends BaseRenderer {
                 GL_UNIFORM_BUFFER,
                 Semantic.Uniform.TRANSFORM1,
                 bufferName.get(Buffer.MODEL_MATRIX));
-
-        gl.glDrawElements(
-                GL4.GL_LINES,
-                cube.getIndices().length,
-                GL_UNSIGNED_SHORT,
-                0);
-
+        
+        
+        if (lines) {
+        	gl.glDrawElements(
+	                GL4.GL_LINES,
+	                cube.getIndices().length,
+	                GL_UNSIGNED_SHORT,
+	                0);
+        } else {
+	        gl.glDrawElements(
+	                GL4.GL_TRIANGLES,
+	                cube.getIndices().length,
+	                GL_UNSIGNED_SHORT,
+	                0);
+        }
         gl.glUseProgram(0);
         gl.glBindVertexArray(0);
     }
@@ -290,9 +279,18 @@ public class ArrayRenderer extends BaseRenderer {
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 
         GL4 gl = drawable.getGL().getGL4();
+        
+        float aspectRatio = ((float)width) / height;
+        float xSpan = 1;
+        float ySpan = 1;
 
-        // ortho matrix
-        float[] ortho = FloatUtil.makeOrtho(new float[16], 0, false, -1f, 1f, -1f, 1f, 1f, -1f);
+        if (aspectRatio > 1)
+			xSpan *= aspectRatio;
+		else
+			ySpan = xSpan / aspectRatio;
+
+
+        float[] ortho = FloatUtil.makeOrtho(new float[16], 0, false, -1*xSpan, xSpan, -1*ySpan, ySpan, 1f, -1f);
         globalMatricesPointer.asFloatBuffer().put(ortho);
 
         gl.glViewport(x, y, width, height);
@@ -339,6 +337,8 @@ public class ArrayRenderer extends BaseRenderer {
     		m_PhysicsComponent.translateRot(0, 90, 0, 2);
     	} if (e.getKeyCode() == KeyEvent.VK_DOWN) {
     		m_PhysicsComponent.translateRot(0, -90, 0, 2);
+    	} if (e.getKeyCode() == KeyEvent.VK_L) {
+    		lines = !lines;
     	}
 	}
 
