@@ -328,9 +328,9 @@ public class ArrayRenderer extends BaseRenderer {
     	} if (e.getKeyCode() == KeyEvent.VK_D) {
     		m_PhysicsComponent.x_movement = 20;
     	} if (e.getKeyCode() == KeyEvent.VK_W) {
-    		m_PhysicsComponent.translateScale(0.2f, 0.2f, 0.2f, 2);
+    		m_PhysicsComponent.translateScale(10, 10, 10, 2);
     	} if (e.getKeyCode() == KeyEvent.VK_S) {
-    		m_PhysicsComponent.translateScale(-0.2f, -0.2f, -0.2f, 2);
+    		m_PhysicsComponent.translateScale(-10, -10, -10, 2);
     	} if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
     		m_PhysicsComponent.translateRot(90, 0, 0, 2);
     	} if (e.getKeyCode() == KeyEvent.VK_LEFT) {

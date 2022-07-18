@@ -57,14 +57,14 @@ public class PhysicsComponent extends BaseComponent {
 		}
 		
 		if (scale.x != 0) {
-			current_scale.x += 1 * Math.signum(scale.x);
+			current_scale.x += (0.02*rot.speed) * Math.signum(scale.x);
 			System.out.println(scale.x);
 			scale.x -= 1 * Math.signum(scale.x);
 		} if (scale.y != 0) {
-			current_scale.y += 1 * Math.signum(scale.y);
+			current_scale.y += (0.02*rot.speed) * Math.signum(scale.y);
 			scale.y -= 1 * Math.signum(scale.y);
 		} if (scale.z != 0) {
-			current_scale.z += 1 * Math.signum(scale.z);
+			current_scale.z += (0.02*rot.speed) * Math.signum(scale.z);
 			scale.z -= 1 * Math.signum(scale.z);
 		}
 		
