@@ -78,9 +78,6 @@ public class MeshRenderer extends BaseRenderer  {
 	    vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
 	    elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
 	    
-	    AWTGraphicsDevice device =  AWTGraphicsDevice.createDefault();
-	    
-	    
 		initDebug(gl);
 
         initBuffers(gl);
