@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -13,10 +15,9 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.Animator;
 
-public class WindowComponent extends BaseComponent implements GLEventListener, KeyListener {
+public class WindowComponent extends BaseComponent implements GLEventListener, KeyListener, MouseListener {
 	
 	private GLWindow m_window;
 	private GLProfile m_glProfile;
@@ -74,6 +75,7 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 
         getWindow().addGLEventListener(this);
         getWindow().addKeyListener(this);
+        getWindow().addMouseListener(this);
         
         
         setAnimator(new Animator(getWindow()));
@@ -249,5 +251,32 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 	 */
 	public void setProgramId(int programId) {
 		this.m_programId = programId;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseEvent e) {
 	}
 }

@@ -79,7 +79,6 @@ public class MeshRenderer extends BaseRenderer  {
 		cube = new Cube();
 		cube.getScale().setAll(0.2f);
 		m_PhysicsComponent = new PhysicsComponent();
-		m_PhysicsComponent.object_to_calc = cube;
 	
 		cube.setPos(new Position(0, 0, 0));
 		

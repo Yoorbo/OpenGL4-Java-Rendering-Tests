@@ -24,6 +24,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDebugListener;
@@ -33,18 +34,17 @@ import com.jogamp.opengl.util.GLBuffers;
 
 import components.PhysicsComponent;
 import components.ShaderComponent;
-import datastructures.Position;
 import framework.Semantic;
-import objects.Cube;
+import objects.Chunk;
 
-public class ArrayRenderer extends BaseRenderer {
+public class ArrayRenderer extends BaseRenderer{
 
 	public ArrayRenderer(String title, ScreenDimension dimensions) {
 		super(title, dimensions);
 		// TODO Auto-generated constructor stub
 	}
     
-    private Cube cube;
+    private Chunk chunk;
     private PhysicsComponent m_PhysicsComponent;
 	private ShaderComponent m_ShaderComponent;
 
@@ -77,8 +77,8 @@ public class ArrayRenderer extends BaseRenderer {
 
         GL4 gl = drawable.getGL().getGL4();
         
-        cube = new Cube();
-        cube.getScale().setAll(0.2f);
+        chunk = new Chunk("1");
+        
 		m_PhysicsComponent = new PhysicsComponent();
 
         initDebug(gl);
@@ -90,6 +90,7 @@ public class ArrayRenderer extends BaseRenderer {
         m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "secondversion", "secondversion");
 
         gl.glEnable(GL_DEPTH_TEST);
+        gl.glPointSize(10f);
     }
 
     private void initDebug(GL4 gl) {
@@ -128,8 +129,8 @@ public class ArrayRenderer extends BaseRenderer {
 
     private void initBuffers(GL4 gl) {
 
-        FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(cube.getVertices());
-        ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(cube.getIndices());
+        FloatBuffer vertexBuffer = GLBuffers.newDirectFloatBuffer(chunk.getVertices());
+        ShortBuffer elementBuffer = GLBuffers.newDirectShortBuffer(chunk.getIndices());
 
         gl.glCreateBuffers(Buffer.MAX, bufferName);
 
@@ -238,7 +239,7 @@ public class ArrayRenderer extends BaseRenderer {
             float[] rotateZ = FloatUtil.makeRotationAxis(new float[16], 0, 
             		m_PhysicsComponent.current_rot.x,
             		m_PhysicsComponent.current_rot.y,
-            		m_PhysicsComponent.current_rot.z, 1f, new float[3]);
+            		m_PhysicsComponent.current_rot.z, 1f, new float[] {m_PhysicsComponent.current_pos.x, m_PhysicsComponent.current_pos.y, m_PhysicsComponent.current_pos.z});
             float[] model = FloatUtil.multMatrix(scale, rotateZ);
             model = FloatUtil.multMatrix(model, translation);
             modelMatrixPointer.asFloatBuffer().put(model);
@@ -260,17 +261,23 @@ public class ArrayRenderer extends BaseRenderer {
         
         if (lines) {
         	gl.glDrawElements(
-	                GL4.GL_LINES,
-	                cube.getIndices().length,
+	                GL4.GL_LINE_STRIP,
+	                chunk.getIndices().length,
 	                GL_UNSIGNED_SHORT,
 	                0);
         } else {
 	        gl.glDrawElements(
 	                GL4.GL_TRIANGLES,
-	                cube.getIndices().length,
+	                chunk.getIndices().length,
 	                GL_UNSIGNED_SHORT,
 	                0);
         }
+        
+        gl.glDrawElements(
+                GL4.GL_POINTS,
+                chunk.getIndices().length,
+                GL_UNSIGNED_SHORT,
+                0);
         gl.glUseProgram(0);
         gl.glBindVertexArray(0);
     }
@@ -290,7 +297,7 @@ public class ArrayRenderer extends BaseRenderer {
 			ySpan = xSpan / aspectRatio;
 
 
-        float[] ortho = FloatUtil.makeOrtho(new float[16], 0, false, -1*xSpan, xSpan, -1*ySpan, ySpan, 1f, -1f);
+        float[] ortho = FloatUtil.makeOrtho(new float[16], 0, false, -1*xSpan, xSpan, -1*ySpan, ySpan, 2f, -2f);
         globalMatricesPointer.asFloatBuffer().put(ortho);
 
         gl.glViewport(x, y, width, height);
@@ -319,8 +326,6 @@ public class ArrayRenderer extends BaseRenderer {
         	
     	if (e.getKeyCode() == KeyEvent.VK_SPACE) {
     		m_PhysicsComponent.jumping = m_PhysicsComponent.jumping <= -20 ? 20 : m_PhysicsComponent.jumping;
-    	} if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-    		cube.translatePos(new Position(0, -0.05f, 0));
     	} if (e.getKeyCode() == KeyEvent.VK_A) {
     		m_PhysicsComponent.x_movement = -20;
     	} if (e.getKeyCode() == KeyEvent.VK_D) {
@@ -339,10 +344,36 @@ public class ArrayRenderer extends BaseRenderer {
     		m_PhysicsComponent.translateRot(0, -90, 0, 2);
     	} if (e.getKeyCode() == KeyEvent.VK_L) {
     		lines = !lines;
+    	} if (e.getKeyCode() == KeyEvent.VK_N) {
+    		chunk.next_cube();
+    	} if (e.getKeyCode() == KeyEvent.VK_R) {
+    		chunk.restore();
+    	} if (e.getKeyCode() == KeyEvent.VK_I) {
+    		chunk.next_line();
     	}
 	}
 
     @Override
     public void keyReleased(KeyEvent e) {
     }
+    
+    @Override
+	public void mouseClicked(MouseEvent e) {
+		System.out.println(e.getX() + " " + e.getY());
+		
+	}
+
+	/**
+	 * @return the matBuffer
+	 */
+	public FloatBuffer getMatBuffer() {
+		return matBuffer;
+	}
+
+	/**
+	 * @param matBuffer the matBuffer to set
+	 */
+	public void setMatBuffer(FloatBuffer matBuffer) {
+		this.matBuffer = matBuffer;
+	}
 }

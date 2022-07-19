@@ -17,8 +17,17 @@ public abstract class BaseObject extends BaseComponent {
 	
 	protected double rotAngle;
 	
+	protected String id;
+	
+	protected boolean in_chunk;
+	public boolean debug = false;
+	
 	public BaseObject() {
 		
+	}
+	
+	public BaseObject(String objectid) {
+		id = objectid;
 	}
 	/**
 	 * @return the indices
@@ -77,4 +86,28 @@ public abstract class BaseObject extends BaseComponent {
 	}
 	
 	protected void recalc() {};
+	
+	public float[] verticesInsertBehind(float[] arrayToCombine) {
+		float result[] = new float[getVertices().length + arrayToCombine.length];
+		System.arraycopy(arrayToCombine, 0, result, 0, arrayToCombine.length);
+		System.arraycopy(getVertices(), 0, result, arrayToCombine.length, getVertices().length);
+		return result;
+	}
+	
+	public short[] indicesInsertBehind(short[] arrayToCombine) {
+		for (int iter = 0; iter < getIndices().length; iter++) {
+			getIndices()[iter] += arrayToCombine.length/36*8;
+		}
+		short result[] = new short[getIndices().length + arrayToCombine.length];
+		System.arraycopy(arrayToCombine, 0, result, 0, arrayToCombine.length);
+		System.arraycopy(getIndices(), 0, result, arrayToCombine.length, getIndices().length);
+		return result;
+	}
+	
+	public short[] singleIndiceInsertBehind(short[] arrayToCombine, int index, int heigher) {
+		short result[] = new short[1 + arrayToCombine.length];
+		System.arraycopy(arrayToCombine, 0, result, 0, arrayToCombine.length);
+		System.arraycopy(new short[] { (short) (getIndices()[index] +  heigher)  }, 0, result, arrayToCombine.length, 1);
+		return result;
+	}
 }
