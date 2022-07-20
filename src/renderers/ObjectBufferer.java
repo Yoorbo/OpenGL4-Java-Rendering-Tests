@@ -20,12 +20,13 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.GLBuffers;
 
+import components.BaseComponent;
 import components.PhysicsComponent;
 import components.ShaderComponent;
 import framework.Semantic;
 import objects.BaseObject;
 
-public class ObjectBufferer{
+public class ObjectBufferer extends BaseComponent{
     
     private BaseObject object_to_buffer;
     private PhysicsComponent m_PhysicsComponent;
@@ -49,20 +50,55 @@ public class ObjectBufferer{
         int MODEL_MATRIX = 3;
         int MAX = 4;
     }
-
+    
+    // Constructors 
 
     public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN) {        
         m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "secondversion", "secondversion");
-        initBuffers(gl);
+        
         vertexArray = vertexArrayIN;
+        initBuffers(gl);
     }
     
     public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN, int activeSlot) {        
         m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", "secondversion", "secondversion");
-        initBuffers(gl);
+        
         vertexArray = vertexArrayIN;
         activeArraySlot = activeSlot;
+        initBuffers(gl);
     }
+    
+    public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN, int activeSlot, String shadername) {        
+        m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", shadername, shadername);
+        
+        vertexArray = vertexArrayIN;
+        activeArraySlot = activeSlot;
+        initBuffers(gl);
+    }
+    
+    public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN, int activeSlot, String shadername , String shaderpath) {        
+        m_ShaderComponent = new ShaderComponent(gl, shaderpath, shadername, shadername);
+        
+        vertexArray = vertexArrayIN;
+        activeArraySlot = activeSlot;
+        initBuffers(gl);
+    }
+    
+    public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN, String shadername) {        
+        m_ShaderComponent = new ShaderComponent(gl, "src/resources/shaders", shadername, shadername);
+        
+        vertexArray = vertexArrayIN;
+        initBuffers(gl);
+    }
+    
+    public ObjectBufferer(BaseObject to_buffer, GL4 gl, IntBuffer vertexArrayIN, String shadername , String shaderpath) {        
+        m_ShaderComponent = new ShaderComponent(gl, shaderpath, shadername, shadername);
+        
+        vertexArray = vertexArrayIN;
+        initBuffers(gl);
+    }
+    
+    //Functions
 
     private void initBuffers(GL4 gl) {
 
