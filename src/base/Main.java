@@ -1,5 +1,6 @@
 package base;
 
+import components.SceneComponent;
 import renderers.ArrayRenderer;
 import renderers.BaseRenderer;
 import renderers.MeshRenderer;
@@ -10,7 +11,8 @@ public class Main {
 	
 	public static void main(String[] args) {
 		Main main = new Main();
-		main.setRenderer(new ArrayRenderer("Array Renderer", new MeshRenderer.ScreenDimension(1000, 1000)));
+		//main.setRenderer(new ArrayRenderer("Array Renderer", new MeshRenderer.ScreenDimension(1000, 1000)));
+		main.setRenderer(new SceneComponent("Scene Renderer", new SceneComponent.ScreenDimension(1000, 1000)));
 	}
 	
 	// Getter & Setters

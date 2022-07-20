@@ -15,6 +15,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.util.Animator;
 
 public class WindowComponent extends BaseComponent implements GLEventListener, KeyListener, MouseListener {
@@ -119,10 +120,26 @@ public class WindowComponent extends BaseComponent implements GLEventListener, K
 		setProgramId(drawable.getGL().getGL4().glCreateProgram());
 	}
 
-	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		getGLobject().glViewport(((width-height)/2), 0, height, height);
-	};
+	 @Override
+	    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+
+	        GL4 gl = drawable.getGL().getGL4();
+	        
+	        float aspectRatio = ((float)width) / height;
+	        float xSpan = 1;
+	        float ySpan = 1;
+
+	        if (aspectRatio > 1)
+				xSpan *= aspectRatio;
+			else
+				ySpan = xSpan / aspectRatio;
+
+
+	        float[] ortho = FloatUtil.makeOrtho(new float[16], 0, false, -1*xSpan, xSpan, -1*ySpan, ySpan, 2f, -2f);
+	        globalMatricesPointer.asFloatBuffer().put(ortho);
+
+	        gl.glViewport(x, y, width, height);
+	    }
 	
 	
 	// WindowComponent Getters & Setters
