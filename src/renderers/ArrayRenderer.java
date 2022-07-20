@@ -80,8 +80,8 @@ public class ArrayRenderer extends BaseRenderer{
         chunk = new Chunk("1");
         
 		m_PhysicsComponent = new PhysicsComponent();
-
-        initDebug(gl);
+		
+		initDebug(gl);
 
         initBuffers(gl);
 
@@ -91,40 +91,6 @@ public class ArrayRenderer extends BaseRenderer{
 
         gl.glEnable(GL_DEPTH_TEST);
         gl.glPointSize(10f);
-    }
-
-    private void initDebug(GL4 gl) {
-
-        getWindow().getContext().addGLDebugListener(new GLDebugListener() {
-            @Override
-            public void messageSent(GLDebugMessage event) {
-                System.out.println(event);
-            }
-        });
-
-        gl.glDebugMessageControl(
-                GL_DONT_CARE,
-                GL_DONT_CARE,
-                GL_DONT_CARE,
-                0,
-                null,
-                false);
-
-        gl.glDebugMessageControl(
-                GL_DONT_CARE,
-                GL_DONT_CARE,
-                GL_DEBUG_SEVERITY_HIGH,
-                0,
-                null,
-                true);
-
-        gl.glDebugMessageControl(
-                GL_DONT_CARE,
-                GL_DONT_CARE,
-                GL_DEBUG_SEVERITY_MEDIUM,
-                0,
-                null,
-                true);
     }
 
     private void initBuffers(GL4 gl) {
@@ -376,4 +342,38 @@ public class ArrayRenderer extends BaseRenderer{
 	public void setMatBuffer(FloatBuffer matBuffer) {
 		this.matBuffer = matBuffer;
 	}
+	
+	private void initDebug(GL4 gl) {
+
+        getWindow().getContext().addGLDebugListener(new GLDebugListener() {
+            @Override
+            public void messageSent(GLDebugMessage event) {
+                System.out.println(event);
+            }
+        });
+
+        gl.glDebugMessageControl(
+                GL_DONT_CARE,
+                GL_DONT_CARE,
+                GL_DONT_CARE,
+                0,
+                null,
+                false);
+
+        gl.glDebugMessageControl(
+                GL_DONT_CARE,
+                GL_DONT_CARE,
+                GL_DEBUG_SEVERITY_HIGH,
+                0,
+                null,
+                true);
+
+        gl.glDebugMessageControl(
+                GL_DONT_CARE,
+                GL_DONT_CARE,
+                GL_DEBUG_SEVERITY_MEDIUM,
+                0,
+                null,
+                true);
+    }
 }
